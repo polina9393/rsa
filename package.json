@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/polina9393/rsa#readme",
   "dependencies": {
-    "big-integer": "^1.6.48"
+    "big-integer": "^1.6.48",
+    "jest": "^25.1.0",
+    "mocha": "^7.1.0"
   }
 }
