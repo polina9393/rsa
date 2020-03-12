@@ -1,5 +1,5 @@
 const bigInt = require("big-integer");
-
+const readline = require('readline')
 
 class RSA{
     constructor(){
@@ -193,20 +193,29 @@ const break_rsa=(e,n,c)=>{
   console.log(keys.decode(decrypt_message), "Hack")
   return decrypt_message 
 }
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+})
 
+rl.question(`Please write your message no longer than two characters  `, (m) => {
+  console.log(`Hi ${m}!`)
+  main(m)
+  rl.close()
+})
 
-const main=function(){
+const main=function(m){
   const keys = new RSA()
   keys.calculate_keys()
-
-  const message = keys.encode("hi")
+  console.log(m)
+  const message = keys.encode(m)
   const alice_ciphertext = keys.encrypt(keys.e,keys.n,message)
   const bob_decrypt = keys.decrypt(alice_ciphertext,keys.d,keys.n)
   console.log(alice_ciphertext,keys.decode(bob_decrypt))
 
   break_rsa(keys.e,keys.n,alice_ciphertext)
 
- }();
+ }
 
 
 
