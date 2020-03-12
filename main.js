@@ -1,29 +1,7 @@
 const bigInt = require("big-integer");
 
-const sieve_of_eratosthenes_=(n)=>{
-  const primes = [];
-  for (let i = 0; i <= n; i++) {
-    primes[i] = true;
-  }
-  
-  primes[0] = false;
-  primes[1] = false;
-  
-  for (let i = 2; i <= Math.sqrt(n); i++) {
-    for (let j = 2; i * j <= n; j++) {
-      primes[i * j] = false;
-    }
-  }
-  
-  const result = [];
-  for (let i = 0; i < primes.length; i++) {
-    if (primes[i]) result.push(i);
-  }
-  
-  return result;
-}
 
-class Key{
+class RSA{
     constructor(){
       this.p = undefined
       this.q = undefined
@@ -33,38 +11,36 @@ class Key{
       this.d = undefined     
     }
     sieve_of_eratosthenes(n) {
-      const primes = [];
+      const primes = []
       for (let i = 0; i <= n; i++) {
-        primes[i] = true;
+        primes[i] = true
       }
       
-      primes[0] = false;
-      primes[1] = false;
+      primes[0] = false
+      primes[1] = false
       
       for (let i = 2; i <= Math.sqrt(n); i++) {
         for (let j = 2; i * j <= n; j++) {
-          primes[i * j] = false;
+          primes[i * j] = false
         }
       }
       
-      const result = [];
+      const result = []
       for (let i = 0; i < primes.length; i++) {
-        if (primes[i]) result.push(i);
+        if (primes[i]) result.push(i)
       }
-      
-      return result;
+      console.log(result)
+      return result
     }
     gcd(x, y) {
-      if ((typeof x !== 'number') || (typeof y !== 'number')) 
-        return false;
-      x = Math.abs(x);
-      y = Math.abs(y);
+      x = Math.abs(x)
+      y = Math.abs(y)
       while(y) {
-        var t = y;
-        y = x % y;
-        x = t;
+        var t = y
+        y = x % y
+        x = t
       }
-      return x;
+      return x
     }
 
     random_prime_number(primes,e){
@@ -117,11 +93,11 @@ class Key{
     }
   
     calculate_keys(){
-      const prime_numbers = this.sieve_of_eratosthenes(100)
-
+      const prime_numbers = this.sieve_of_eratosthenes(500)
+      console.log(prime_numbers[prime_numbers.length-1])
       // generate two prime numbers
-      this.p = prime_numbers[3]
-      this.q = prime_numbers[4]
+      this.p = prime_numbers[prime_numbers.length-1]
+      this.q = prime_numbers[prime_numbers.length-2]
   
       // compute n
       this.n = this.p*this.q
@@ -132,7 +108,7 @@ class Key{
       // compute e
       this.e = this.random_prime_number(prime_numbers, this.r)
        //this.e = 47
-       //this.e = 13
+       //this.e = 23
   
       // final step 
       // e r 7 / 40
@@ -142,6 +118,53 @@ class Key{
       if((this.e*this.d)%this.r!==1){
         console.log("does not work!")
       }
+    }
+    encrypt(e,n,message){
+      console.log("========")
+      console.log(n, message,e)
+      const power = bigInt(message).pow(e)
+      const encrypt_messsage = bigInt(power).mod(bigInt(n))
+      return encrypt_messsage
+    }
+    decrypt(c,d,n){
+      console.log("///////////")
+      console.log(c, d,n)
+      const power = bigInt(c).pow(d)
+      const decrypt_message = bigInt(power).mod(bigInt(n))
+      return Number(decrypt_message)
+    }
+    encode(str) {
+      const codes = str
+        .split('')
+        .map(i => i.charCodeAt())
+        .join('')
+    
+      return codes
+    }
+    
+    decode(code) {
+      const stringified = code.toString();
+      let string = '';
+    
+      for (let i = 0; i < stringified.length; i += 2) {
+        const num = Number(stringified.substr(i, 2));
+        
+        if (num <= 30) {
+          string += String.fromCharCode(Number(stringified.substr(i, 3)));
+          i++;
+        } else {
+          string += String.fromCharCode(num);
+        }
+      }
+    
+      return string;
+    }
+    encrypt(e,n,message){
+      console.log("========")
+      console.log(n, message,e)
+      const power = bigInt(message).pow(e)
+      const encrypt_messsage = Number(bigInt(power).mod(bigInt(n)))
+      return encrypt_messsage
     }
   }
 
@@ -160,13 +183,13 @@ const multiple_all_primes = (primes)=>{
 
 const break_rsa=(e,n,c)=>{
   // find d
-  const init = new Key()
-  const primes = init.sieve_of_eratosthenes(100)
+  const keys = new RSA()
+  const primes = keys.sieve_of_eratosthenes(100)
   const primes_mult = multiple_all_primes(primes)
   const p = primes_mult[n][0]
   const q = primes_mult[n][1]
   const r = (p-1)*(q-1) 
-  const d = init.extended_euclidean(e,r)
+  const d = keys.extended_euclidean(e,r)
   console.log(d)
   // decrypt message
   const power = bigInt(c).pow(d)
@@ -175,42 +198,22 @@ const break_rsa=(e,n,c)=>{
   return decrypt_message 
 }
 
-function decrypt(c,d,n){
-  console.log("///////////")
-  console.log(c, d,n)
-  const power = bigInt(c).pow(d)
-  const decrypt_message = Number(bigInt(power).mod(bigInt(n)))
-  return decrypt_message
-}
-function encrypt(e,n,message){
-  console.log("========")
-  console.log(n, message,e)
-  const power = bigInt(message).pow(e)
-  const encrypt_messsage = Number(bigInt(power).mod(bigInt(n)))
-  return encrypt_messsage
-}
-
-// const data = { coordinates: { x: 5, y: 6 } };
-
-// const { coordinates: { x: xCoord, y: yCoord } } = data;
-
-// console.log(xCoord, yCoord)
 
 const main=function(){
-  const keys = new Key()
+  const keys = new RSA()
   keys.calculate_keys()
 
-  const {bob_keys} = keys
-  //console.log(d)
-  const alice_ciphertext = encrypt(keys.e,keys.n,5)
+  const message = keys.encode("hi")
+  console.log("message number"+message)
+  const alice_ciphertext = keys.encrypt(keys.e,keys.n,message)
   console.log("ciphertext "+ alice_ciphertext)
-  const bob_decrypt = decrypt(alice_ciphertext,keys.d,keys.n)
-  console.log(alice_ciphertext,bob_decrypt)
+  const bob_decrypt = keys.decrypt(alice_ciphertext,keys.d,keys.n)
+  console.log(alice_ciphertext,bob_decrypt,keys.decode(bob_decrypt))
 
-  break_rsa(keys.e,keys.n,alice_ciphertext)
+  // break_rsa(keys.e,keys.n,alice_ciphertext)
 
  }();
 
 
 
-module.exports = Key
+module.exports = RSA
