@@ -1,5 +1,28 @@
 const bigInt = require("big-integer");
 
+const sieve_of_eratosthenes_=(n)=>{
+  const primes = [];
+  for (let i = 0; i <= n; i++) {
+    primes[i] = true;
+  }
+  
+  primes[0] = false;
+  primes[1] = false;
+  
+  for (let i = 2; i <= Math.sqrt(n); i++) {
+    for (let j = 2; i * j <= n; j++) {
+      primes[i * j] = false;
+    }
+  }
+  
+  const result = [];
+  for (let i = 0; i < primes.length; i++) {
+    if (primes[i]) result.push(i);
+  }
+  
+  return result;
+}
+
 class Key{
     constructor(){
       this.p = undefined
@@ -10,22 +33,22 @@ class Key{
       this.d = undefined     
     }
     sieve_of_eratosthenes(n) {
-      var primes = [];
-      for (var i = 0; i <= n; i++) {
+      const primes = [];
+      for (let i = 0; i <= n; i++) {
         primes[i] = true;
       }
       
       primes[0] = false;
       primes[1] = false;
       
-      for (var i = 2; i <= Math.sqrt(n); i++) {
-        for (var j = 2; i * j <= n; j++) {
+      for (let i = 2; i <= Math.sqrt(n); i++) {
+        for (let j = 2; i * j <= n; j++) {
           primes[i * j] = false;
         }
       }
       
-      var result = [];
-      for (var i = 0; i < primes.length; i++) {
+      const result = [];
+      for (let i = 0; i < primes.length; i++) {
         if (primes[i]) result.push(i);
       }
       
@@ -92,7 +115,7 @@ class Key{
       }
       return this.extended_euclidean(undefined,undefined,first_row_one,first_row_two,second_row_one,second_row_two, r)
     }
-
+  
     calculate_keys(){
       const prime_numbers = this.sieve_of_eratosthenes(100)
 
@@ -122,35 +145,72 @@ class Key{
     }
   }
 
-function main(){
-  const bob = new Key()
-  bob.calculate_keys()
-  
-  function alice(e,n){
-    const message = 5
-    // const encrypt_messsage = (message**e)%n
-    console.log("========")
-    console.log(n, message,e)
-    // const encrypt_messsage = Number(BigInt(message**e)%BigInt(n))
-    const power = bigInt(message).pow(e)
-    const encrypt_messsage = Number(bigInt(power).mod(bigInt(n)))
-    return encrypt_messsage
+const multiple_all_primes = (primes)=>{
+  let store = {}
+  for(let i =0;i<primes.length;i++){
+    const first = primes[i]
+    for(let j = 0;j<primes.length;j++){
+      const second = primes[j]
+      const multip = first*second
+      store[multip] = [first,second]
+    }
   }
-  function bob_decrypt(c){
-    console.log("///////////")
-    console.log(c, bob.d,bob.n)
-    //const decrypt_message=bob.n%Number(BigInt(c**bob.d)%BigInt(bob.n))
-    const power = bigInt(c).pow(bob.d)
-    const decrypt_message = Number(bigInt(power).mod(bigInt(bob.n)))
-    return decrypt_message
-  }
-  const alice_c = alice(bob.e,bob.n)
-  console.log("ciphertext "+ alice_c)
-  const alice_message = bob_decrypt(alice_c)
-  console.log(alice_c,alice_message)
- } 
+  return store
+}
 
-main()
+const break_rsa=(e,n,c)=>{
+  // find d
+  const init = new Key()
+  const primes = init.sieve_of_eratosthenes(100)
+  const primes_mult = multiple_all_primes(primes)
+  const p = primes_mult[n][0]
+  const q = primes_mult[n][1]
+  const r = (p-1)*(q-1) 
+  const d = init.extended_euclidean(e,r)
+  console.log(d)
+  // decrypt message
+  const power = bigInt(c).pow(d)
+  const decrypt_message = Number(bigInt(power).mod(bigInt(n)))
+  console.log(decrypt_message, "Hack")
+  return decrypt_message 
+}
+
+function decrypt(c,d,n){
+  console.log("///////////")
+  console.log(c, d,n)
+  const power = bigInt(c).pow(d)
+  const decrypt_message = Number(bigInt(power).mod(bigInt(n)))
+  return decrypt_message
+}
+function encrypt(e,n,message){
+  console.log("========")
+  console.log(n, message,e)
+  const power = bigInt(message).pow(e)
+  const encrypt_messsage = Number(bigInt(power).mod(bigInt(n)))
+  return encrypt_messsage
+}
+
+// const data = { coordinates: { x: 5, y: 6 } };
+
+// const { coordinates: { x: xCoord, y: yCoord } } = data;
+
+// console.log(xCoord, yCoord)
+
+const main=function(){
+  const keys = new Key()
+  keys.calculate_keys()
+
+  const {bob_keys} = keys
+  //console.log(d)
+  const alice_ciphertext = encrypt(keys.e,keys.n,5)
+  console.log("ciphertext "+ alice_ciphertext)
+  const bob_decrypt = decrypt(alice_ciphertext,keys.d,keys.n)
+  console.log(alice_ciphertext,bob_decrypt)
+
+  break_rsa(keys.e,keys.n,alice_ciphertext)
+
+ }();
+
 
 
 module.exports = Key
