@@ -29,7 +29,6 @@ class RSA{
       for (let i = 0; i < primes.length; i++) {
         if (primes[i]) result.push(i)
       }
-      console.log(result)
       return result
     }
     gcd(x, y) {
@@ -99,18 +98,14 @@ class RSA{
       this.p = prime_numbers[prime_numbers.length-1]
       this.q = prime_numbers[prime_numbers.length-2]
   
-      // compute n
       this.n = this.p*this.q
   
-      // compute r
       this.r = (this.p-1)*(this.q-1) 
   
-      // compute e
       this.e = this.random_prime_number(prime_numbers, this.r)
        //this.e = 47
        //this.e = 23
-  
-      // final step 
+   
       // e r 7 / 40
       this.d = this.extended_euclidean(this.e,this.r)
       console.log(this.d+" this.d")
@@ -168,23 +163,24 @@ class RSA{
     }
   }
 
-const multiple_all_primes = (primes)=>{
-  let store = {}
-  for(let i =0;i<primes.length;i++){
-    const first = primes[i]
-    for(let j = 0;j<primes.length;j++){
-      const second = primes[j]
-      const multip = first*second
-      store[multip] = [first,second]
-    }
-  }
-  return store
-}
+
 
 const break_rsa=(e,n,c)=>{
+  const multiple_all_primes = (primes)=>{
+    let store = {}
+    for(let i =0;i<primes.length;i++){
+      const first = primes[i]
+      for(let j = 0;j<primes.length;j++){
+        const second = primes[j]
+        const multip = first*second
+        store[multip] = [first,second]
+      }
+    }
+    return store
+  }
   // find d
   const keys = new RSA()
-  const primes = keys.sieve_of_eratosthenes(100)
+  const primes = keys.sieve_of_eratosthenes(500)
   const primes_mult = multiple_all_primes(primes)
   const p = primes_mult[n][0]
   const q = primes_mult[n][1]
@@ -194,7 +190,7 @@ const break_rsa=(e,n,c)=>{
   // decrypt message
   const power = bigInt(c).pow(d)
   const decrypt_message = Number(bigInt(power).mod(bigInt(n)))
-  console.log(decrypt_message, "Hack")
+  console.log(keys.decode(decrypt_message), "Hack")
   return decrypt_message 
 }
 
@@ -204,13 +200,11 @@ const main=function(){
   keys.calculate_keys()
 
   const message = keys.encode("hi")
-  console.log("message number"+message)
   const alice_ciphertext = keys.encrypt(keys.e,keys.n,message)
-  console.log("ciphertext "+ alice_ciphertext)
   const bob_decrypt = keys.decrypt(alice_ciphertext,keys.d,keys.n)
-  console.log(alice_ciphertext,bob_decrypt,keys.decode(bob_decrypt))
+  console.log(alice_ciphertext,keys.decode(bob_decrypt))
 
-  // break_rsa(keys.e,keys.n,alice_ciphertext)
+  break_rsa(keys.e,keys.n,alice_ciphertext)
 
  }();
 
