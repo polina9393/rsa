@@ -15,9 +15,11 @@ rl.question(`Send message to Bob (no longer than two characters) `, (m) => {
 })
 
 const main = function (m,m2) {
+  // initialise keys
   const keys = new RSA()
   keys.calculate_keys()
 
+  // Alice sends message
   const message = keys.encode(m)
   console.log("")
   const alice_ciphertext = keys.encrypt(keys.e, keys.n, message)
@@ -26,6 +28,7 @@ const main = function (m,m2) {
   const bob_decrypt = keys.decrypt(alice_ciphertext, keys.d, keys.n)
   console.log('        Bob decrypts message into '+bob_decrypt+' and then decode into '+keys.decode(bob_decrypt))
 
+  // Bob replies
   const second_message = keys.encode(m2)
   console.log("")
   const bob_ciphertext = keys.encrypt(keys.e, keys.n, second_message)
