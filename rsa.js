@@ -12,12 +12,11 @@ class RSA{
     }
     sieve_of_eratosthenes(n) {
       const primes = []
-      for (let i = 0; i <= n; i++) {
-        primes[i] = true
-      }
-      
       primes[0] = false
       primes[1] = false
+      for (let i = 2; i <= n; i++) {
+        primes[i] = true
+      }
       
       for (let i = 2; i <= Math.sqrt(n); i++) {
         for (let j = 2; i * j <= n; j++) {
@@ -29,13 +28,14 @@ class RSA{
       for (let i = 0; i < primes.length; i++) {
         if (primes[i]) result.push(i)
       }
+  
       return result
     }
     gcd(x, y) {
       x = Math.abs(x)
       y = Math.abs(y)
       while(y) {
-        var t = y
+        let t = y
         y = x % y
         x = t
       }
@@ -121,11 +121,11 @@ class RSA{
       return Number(bigInt(power).mod(bigInt(n)))
     }
     encode(str) {
-      const codes = str.split('')
-        .map(el => el.charCodeAt())
-        .join('')
-    
-      return codes
+      let result = ''  
+      for(let i=0;i<str.length;i++){
+          result+=str[i].charCodeAt()
+      }
+      return result
     }
     
     decode(code) {
@@ -146,7 +146,7 @@ class RSA{
       return string
     }
 
-    break_rsa = (e, n, c) => {
+    break_rsa(e, n, c){
         // create all possible primes multiplication
         const multiple_all_primes = (primes) => {
           let store = {}
