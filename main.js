@@ -7,12 +7,23 @@ const rl = readline.createInterface({
   output: process.stdout
 })
 
-rl.question(`Send message to Bob `, (m) => {
-  // rl.question('Reply to Alice (no longer than two characters) ', (m2) => {
+rl.question(`Send message `, (m) => {
   main(m)
-  rl.close()
-  //})
+  conversation()
 })
+
+const conversation = function(reply=true){
+  const question = reply ? "Would you like to reply? Write `exit` to finish or your message ":"Send message again " 
+  rl.question(question, (m2) => {
+    if(m2!=="exit"){
+      main(m2)
+      conversation(!reply)
+    } else{
+      rl.close()
+    }    
+  })  
+}
+
 
 const main = function (m) {
   // initialise keys
@@ -20,58 +31,50 @@ const main = function (m) {
   keys.calculate_keys()
 
   // Alice sends message
-  // const message = keys.encode(m)
-  // console.log("")
-  // const alice_ciphertext = keys.encrypt(keys.e, keys.n, message)
-  // console.log(`Alice computes ciphertext with message ${m}, encoded number ${message}, public keys e: ${keys.e} and n:${keys.n} \n ------>`)
-  // console.log(`${alice_ciphertext}`)
-  // const bob_decrypt = keys.decrypt(alice_ciphertext, keys.d, keys.n)
+  console.log("")
+
   const send_message = []
+  const encode_character_arr = []
   for (let i = 0; i < m.length; i++) {
 
     const encode_character = keys.encode(m[i])
+    encode_character_arr.push(encode_character)
     const alice_ciphertext = keys.encrypt(keys.e, keys.n, encode_character)
 
     send_message.push(alice_ciphertext)
   }
+  console.log(`Alice computes array of ciphertext for each character of message ${m} \n 1. She creates encoded array of characters ${encode_character_arr} \n 2. Encrypts each character with public keys e: ${keys.e} and n:${keys.n} \n Alice ciphertext array ->`)
+  console.log(`${send_message}`)
 
-
-  let decrypt_message = ''
+  // Bob reads
+  console.log("")
+  console.log("Bob decrypts Alice message")
+  let encoded_message = ''
+  const bob_decrypt_arr = []
 
   send_message.forEach(el => {
-
     const bob_decrypt_char = keys.decrypt(el, keys.d, keys.n)
-    decrypt_message += keys.decode(bob_decrypt_char)
-
+    bob_decrypt_arr.push(bob_decrypt_char)
+    encoded_message += keys.decode(bob_decrypt_char)
   })
+  console.log(` 1. He decrypts each number from array ${send_message} into`)
+  console.log(`${bob_decrypt_arr}`)
+  console.log(` 2. then decodes into -> ${encoded_message}`)
 
-  console.log(decrypt_message)
-
-  //console.log('        Bob decrypts message into '+bob_decrypt+' and then decode into '+keys.decode(bob_decrypt))
-
-  // Bob replies
-  // const second_message = keys.encode(m2)
-  // console.log("")
-  // const bob_ciphertext = keys.encrypt(keys.e, keys.n, second_message)
-  // console.log(`Bob replies with ciphertext where message ${m2} encode ${second_message}, public keys e: ${keys.e} and n:${keys.n} \n ------>`)
-  // console.log(`${bob_ciphertext}`)
-  // const alice_decrypt = keys.decrypt(bob_ciphertext, keys.d, keys.n)
-  // console.log('        Alice decrypts message into '+alice_decrypt+' and then encrypts into '+keys.decode(alice_decrypt))
 
   // Charlie
-  // const charlie_first_message = keys.break_rsa(keys.e, keys.n, alice_ciphertext)
-  // const charlie_second_message = keys.break_rsa(keys.e, keys.n, bob_ciphertext)
-  // console.log("")
-  // console.log(`Charlie gets public keys e: ${keys.e}, n:${keys.n} and Alice's ciphertext ${alice_ciphertext} \n computes message ${charlie_first_message}`)
-  //const charlie_first_message = keys.break_rsa(keys.e, keys.n, send_message)
+  console.log("")
+  console.log("Charlie reads conversation")
   let charlie_first_message = ''
   send_message.forEach((el)=>{
     const broked_char = keys.break_rsa(keys.e, keys.n, el)
     charlie_first_message+=broked_char
   })
+  console.log(` 1. He gets public keys e: ${keys.e}, n:${keys.n} and Alice's ciphertext array ${send_message}`)
+  console.log(` 2. Computer store of all possible prime numbers multiplications as hash table`)
+  console.log(` 3. Finds matched p*q ${keys.primes_mult_hash_table[keys.n]} and then calculates r, d`)
 
+  console.log(` 4. Computes the message ${charlie_first_message}`)
 
-  //console.log("")
-  //console.log(`Charlie gets public keys e: ${keys.e}, n:${keys.n} and Alice's ciphertext ${bob_ciphertext} \n computes message ${charlie_second_message}`)
 
 }

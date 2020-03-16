@@ -10,6 +10,7 @@ class RSA {
     this.r = undefined
     this.d = undefined
     this.prime_numbers = undefined
+    this.primes_mult_hash_table = undefined
   }
   sieve_of_eratosthenes(n) {
     const primes = []
@@ -26,9 +27,7 @@ class RSA {
     }
 
     const result = []
-    for (let i = 0; i < primes.length; i++) {
-      if (primes[i]) result.push(i)
-    }
+    primes.forEach((el,index)=> el&&result.push(index))
 
     return result
   }
@@ -44,15 +43,6 @@ class RSA {
   }
 
   random(e) {
-    // while (next_value < e) {
-    //   const gcd_check = this.gcd(next_value, e)
-
-    //   if (gcd_check === 1) {
-    //     return next_value
-    //   } else {
-    //     return this.random(e, next_value + 1)
-    //   }
-    // }
       const next_value = Math.floor(Math.random() * e) + 1
 
       const gcd_check = this.gcd(next_value, e)
@@ -169,10 +159,9 @@ class RSA {
       return store
     }
     // find d
-    //const primes = this.sieve_of_eratosthenes(500)
-    const primes_mult = multiple_all_primes(this.prime_numbers)
-    const p = primes_mult[n][0]
-    const q = primes_mult[n][1]
+    this.primes_mult_hash_table = multiple_all_primes(this.prime_numbers)
+    const p = this.primes_mult_hash_table[n][0]
+    const q = this.primes_mult_hash_table[n][1]
     const r = (p - 1) * (q - 1)
     const d = this.extended_euclidean(e, r)
     // decrypt message
