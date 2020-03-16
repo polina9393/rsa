@@ -38,7 +38,6 @@ const main = function (m) {
 
   let decrypt_message = ''
 
-
   send_message.forEach(el => {
 
     const bob_decrypt_char = keys.decrypt(el, keys.d, keys.n)
@@ -60,10 +59,18 @@ const main = function (m) {
   // console.log('        Alice decrypts message into '+alice_decrypt+' and then encrypts into '+keys.decode(alice_decrypt))
 
   // Charlie
-  //const charlie_first_message = keys.break_rsa(keys.e, keys.n, alice_ciphertext)
-  //const charlie_second_message = keys.break_rsa(keys.e, keys.n, bob_ciphertext)
-  //console.log("")
-  //console.log(`Charlie gets public keys e: ${keys.e}, n:${keys.n} and Alice's ciphertext ${alice_ciphertext} \n computes message ${charlie_first_message}`)
+  // const charlie_first_message = keys.break_rsa(keys.e, keys.n, alice_ciphertext)
+  // const charlie_second_message = keys.break_rsa(keys.e, keys.n, bob_ciphertext)
+  // console.log("")
+  // console.log(`Charlie gets public keys e: ${keys.e}, n:${keys.n} and Alice's ciphertext ${alice_ciphertext} \n computes message ${charlie_first_message}`)
+  //const charlie_first_message = keys.break_rsa(keys.e, keys.n, send_message)
+  let charlie_first_message = ''
+  send_message.forEach((el)=>{
+    const broked_char = keys.break_rsa(keys.e, keys.n, el)
+    charlie_first_message+=broked_char
+  })
+
+
   //console.log("")
   //console.log(`Charlie gets public keys e: ${keys.e}, n:${keys.n} and Alice's ciphertext ${bob_ciphertext} \n computes message ${charlie_second_message}`)
 
