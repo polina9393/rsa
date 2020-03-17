@@ -94,7 +94,7 @@ class RSA {
 
   calculate_keys() {
     // array of prime numbers
-    this.prime_numbers = this.sieve_of_eratosthenes(500)
+    this.prime_numbers = this.sieve_of_eratosthenes(1000)
 
     const ran_index_p = Math.floor(Math.random() * (this.prime_numbers.length - 1))
     const ran_index_q = Math.floor(Math.random() * (this.prime_numbers.length - 1))

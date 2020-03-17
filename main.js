@@ -48,7 +48,7 @@ const main = function (m, alice) {
 
     send_message.push(ciphertext)
   }
-  console.log(`${sender} computes array of ciphertext for each character of message ${m} \n 1. Creates encoded array of characters ${encode_character_arr} \n 2. Encrypts each character with public keys e: ${keys.e} and n:${keys.n} \n ${sender} ciphertext array ->`)
+  console.log(`${sender} computes array of ciphertext for each character of message ${m} \n 1. Creates encoded array of characters ${encode_character_arr} \n 2. Encrypts each character with public keys e: ${keys.e} and n: ${keys.n} \n ${sender} ciphertext array ->`)
   console.log(`${send_message}`)
 
   // Reader
@@ -62,9 +62,9 @@ const main = function (m, alice) {
     decrypt_arr.push(bob_decrypt_char)
     encoded_message += keys.decode(bob_decrypt_char)
   })
-  console.log(` 1. decrypts each number from array ${send_message} into`)
+  console.log(` 1. Decrypts each number from array ${send_message} into`)
   console.log(`${decrypt_arr}`)
-  console.log(` 2. then decodes into -> ${encoded_message}`)
+  console.log(` 2. Then decodes into -> ${encoded_message}`)
 
 
   // Charlie
@@ -75,9 +75,9 @@ const main = function (m, alice) {
     const broked_char = keys.break_rsa(keys.e, keys.n, el)
     charlie_message+=broked_char
   })
-  console.log(` 1. He gets public keys e: ${keys.e}, n:${keys.n} and ${sender} ciphertext array ${send_message}`)
-  console.log(` 2. Computer store of all possible prime numbers multiplications as hash table`)
+  console.log(` 1. He gets public keys e: ${keys.e}, n: ${keys.n} and ${sender} ciphertext array ${send_message}`)
+  console.log(` 2. Computes store of all possible prime numbers multiplications as hash table`)
   console.log(` 3. Finds matched p*q ${keys.primes_mult_hash_table[keys.n]} and then calculates r, d`)
 
-  console.log(` 4. Computes the message ${charlie_message}`)
+  console.log(` 4. Gets the message ${charlie_message}`)
 }
