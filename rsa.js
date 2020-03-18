@@ -1,5 +1,3 @@
-const bigInt = require("big-integer")
-
 
 class RSA {
   constructor() {
@@ -50,7 +48,7 @@ class RSA {
       if (gcd_check === 1) {
         return next_value
       } else {
-        return this.random(e, next_value + 1)
+        return this.random(e)
       }
     
   }
@@ -94,7 +92,7 @@ class RSA {
 
   calculate_keys() {
     // array of prime numbers
-    this.prime_numbers = this.sieve_of_eratosthenes(1000)
+    this.prime_numbers = this.sieve_of_eratosthenes(500)
 
     const ran_index_p = Math.floor(Math.random() * (this.prime_numbers.length - 1))
     const ran_index_q = Math.floor(Math.random() * (this.prime_numbers.length - 1))
@@ -118,22 +116,22 @@ class RSA {
     console.log("For the chosen values of p, q, and e, we get \n d = " + this.d)
 
   }
-  module_expomentiaton(base,power,mod){
+  module_exponentiation(base,power,mod){
     if(power==1){
         return base
     }
   
     if(power%2==0){
-      return (this.module_expomentiaton(base,power/2,mod) * this.module_expomentiaton(base,power/2,mod)) % mod
+      return (this.module_exponentiation(base,power/2,mod) * this.module_exponentiation(base,power/2,mod)) % mod
     }else{
-      return (this.module_expomentiaton(base,power-1,mod)*base) % mod
+      return (this.module_exponentiation(base,power-1,mod)*base) % mod
     }
   }
   encrypt(e, n, message) {
-    return this.module_expomentiaton(message,e,n)
+    return this.module_exponentiation(message,e,n)
   }
   decrypt(c, d, n) {
-    return this.module_expomentiaton(c,d,n)
+    return this.module_exponentiation(c,d,n)
   }
 
   encode(character) {
